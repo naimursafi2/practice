@@ -124,4 +124,19 @@ const login = async (req, res) => {
   }
 };
 
-module.exports = { registration, verifyOtp, resendOtp, login };
+const getProfile = async (req, res) => {
+  try {
+    const profileData = await userSchema.findOne(
+      { _id: req.user._id },
+      { fullName: 1, email: 1, role: 1, avatar: 1, address: 1 },
+    );
+    if (!profileData)
+      return res.status(400).send({ message: "profileData not found" });
+    res.status(200).send(profileData);
+  } catch (error) {
+    console.log(error);
+    res.status(400).send({ message: "Internal server Error" });
+  }
+};
+
+module.exports = { registration, verifyOtp, resendOtp, login, getProfile };

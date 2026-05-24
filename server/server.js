@@ -4,6 +4,7 @@ const router = require("./routes");
 const dbConfig = require("./config/dbConfig");
 const app = express();
 require("dotenv").config();
+const cors = require("cors");
 
 // dns.setServers(["8.8.8.8", "8.8.4.4"]);
 app.use(express.json());
