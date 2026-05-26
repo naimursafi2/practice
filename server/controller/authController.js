@@ -106,13 +106,13 @@ const login = async (req, res) => {
       return res.status(400).send({ message: "userData not found" });
     if (userData.isVerified == false)
       return res.status(400).send({ message: "Email is not verified" });
-    // const matchPass = await userData.comparePassword(password);
+
     const matchPassword = await userData.comparePassword(password);
     if (!matchPassword)
       return res.status(400).send({ message: "password does not match" });
 
     const accToken = generateAccessTokens(userData);
-    // const refToken = generateRefreshTokens(userData);
+    const refToken = generateRefreshTokens(userData);
     res
       .status(200)
       .cookie("acc_tkn", accToken, cookie_config)
@@ -139,4 +139,26 @@ const getProfile = async (req, res) => {
   }
 };
 
-module.exports = { registration, verifyOtp, resendOtp, login, getProfile };
+const updateProfile = async (req, res) => {
+  const { fullName, address } = req.body;
+  const avatar = req.file;
+  try {
+    const userData = await userSchema.findOne({ _id: user.req._id });
+    if (!userData)
+      return res.status(400).send({ message: "userData is not found" });
+    if (fullName && fullName.trim()) userData.fullName = fullName;
+    if (address && address.trim()) userData.address = address;
+  } catch (error) {
+    console.log(error);
+    res.status(500).send({ message: "Internal Server Error" });
+  }
+};
+
+module.exports = {
+  registration,
+  verifyOtp,
+  resendOtp,
+  login,
+  getProfile,
+  updateProfile,
+};
