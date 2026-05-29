@@ -30,4 +30,19 @@ function generateRefreshTokens(user) {
   );
 }
 
-module.exports = { generateOTP,generateRefreshTokens,generateAccessTokens, isValidEmail };
+const uploadToCloudinary = async ({ mimetype, imgBuffer }) => {
+  console.log(mimetype);
+  console.log(imgBuffer);
+  
+  const dataUrl = `data:${mimetype};base64,${imgBuffer.toString("base64")}`;
+  const res = await cloudinary.uploader.upload(dataUrl);
+  return res.secure_url;
+};
+
+module.exports = {
+  generateOTP,
+  generateRefreshTokens,
+  generateAccessTokens,
+  isValidEmail,
+  uploadToCloudinary
+};

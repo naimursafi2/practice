@@ -6,6 +6,7 @@ const {
   generateOTP,
   generateAccessTokens,
   generateRefreshTokens,
+  uploadToCloudinary,
 } = require("../helpers/utils");
 const userSchema = require("../model/userSchema");
 
@@ -148,6 +149,14 @@ const updateProfile = async (req, res) => {
       return res.status(400).send({ message: "userData is not found" });
     if (fullName && fullName.trim()) userData.fullName = fullName;
     if (address && address.trim()) userData.address = address;
+    if (avatar) {
+      try {
+        const avatarUrl = await uploadToCloudinary;
+      } catch (error) {
+        console.log(error);
+        res.status(400).send({ message: "INternal Server Error" });
+      }
+    }
   } catch (error) {
     console.log(error);
     res.status(500).send({ message: "Internal Server Error" });
