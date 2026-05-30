@@ -144,14 +144,17 @@ const updateProfile = async (req, res) => {
   const { fullName, address } = req.body;
   const avatar = req.file;
   try {
-    const userData = await userSchema.findOne({ _id: user.req._id });
+    const userData = await userSchema.findOne({ _id: req.user._id });
     if (!userData)
       return res.status(400).send({ message: "userData is not found" });
     if (fullName && fullName.trim()) userData.fullName = fullName;
     if (address && address.trim()) userData.address = address;
     if (avatar) {
       try {
-        const avatarUrl = await uploadToCloudinary;
+        const avatarUrl = await uploadToCloudinary({
+          mimetype: avatar.mimetype,
+          imgBuffer: avatar.buffer,
+        });
       } catch (error) {
         console.log(error);
         res.status(400).send({ message: "INternal Server Error" });

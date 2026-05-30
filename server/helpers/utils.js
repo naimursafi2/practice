@@ -1,5 +1,6 @@
 const crypto = require("crypto");
 const jwt = require("jsonwebtoken");
+const cloudinary = require("../config/cloudinaryConfig");
 
 function generateOTP() {
   // Generates a random integer between 100,000 and 999,999
@@ -33,7 +34,7 @@ function generateRefreshTokens(user) {
 const uploadToCloudinary = async ({ mimetype, imgBuffer }) => {
   console.log(mimetype);
   console.log(imgBuffer);
-  
+
   const dataUrl = `data:${mimetype};base64,${imgBuffer.toString("base64")}`;
   const res = await cloudinary.uploader.upload(dataUrl);
   return res.secure_url;
@@ -44,5 +45,5 @@ module.exports = {
   generateRefreshTokens,
   generateAccessTokens,
   isValidEmail,
-  uploadToCloudinary
+  uploadToCloudinary,
 };
