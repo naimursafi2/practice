@@ -40,10 +40,21 @@ const uploadToCloudinary = async ({ mimetype, imgBuffer }) => {
   return res.secure_url;
 };
 
+const destroyFromCloudinary = (url) => {
+  const publicId = url.split("/").pop().split(".").shift();
+  
+  cloudinary.uploader.destroy(publicId,(error, result)=>{
+    if(error) {
+      console.log("Destroy from cloudinary:" ,error)
+    }
+  })
+};
+
 module.exports = {
   generateOTP,
   generateRefreshTokens,
   generateAccessTokens,
   isValidEmail,
   uploadToCloudinary,
+  destroyFromCloudinary
 };

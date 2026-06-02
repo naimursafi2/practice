@@ -7,6 +7,7 @@ const {
   generateAccessTokens,
   generateRefreshTokens,
   uploadToCloudinary,
+  destroyFromCloudinary,
 } = require("../helpers/utils");
 const userSchema = require("../model/userSchema");
 
@@ -155,11 +156,16 @@ const updateProfile = async (req, res) => {
           mimetype: avatar.mimetype,
           imgBuffer: avatar.buffer,
         });
+        if (userData.avatar) destroyFromCloudinary(userData.avatar);
+        userData.avatar = avatarUrl;
+        console.log(req.file);
       } catch (error) {
         console.log(error);
         res.status(400).send({ message: "INternal Server Error" });
       }
     }
+    userData.save();
+    res.status(200).send({ message: "profile update successfully." });
   } catch (error) {
     console.log(error);
     res.status(500).send({ message: "Internal Server Error" });
