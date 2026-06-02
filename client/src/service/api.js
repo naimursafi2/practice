@@ -7,13 +7,20 @@ export const apiService = createApi({
   }),
   endpoints: (build) => ({
     registration: build.mutation({
-      query: ({ registerData }) => ({
+      query: (registerData) => ({
         url: "auth/registration",
         method: "POST",
         body: registerData,
       }),
     }),
+    login: build.mutation({
+      query: (logData) => ({
+        url: "auth/login",
+        method: "POST",
+        body: logData,
+      }),
+    }),
   }),
 });
 
-export const { useRegistrationMutation } = apiService;
+export const { useRegistrationMutation,useLoginMutation } = apiService;

@@ -1,10 +1,13 @@
 import React, { useState } from "react";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 import { toast, ToastContainer } from "react-toastify";
+import { useLoginMutation } from "../service/api";
 
 const Login = () => {
+  const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
+  const [loginUser, { data, error, isLoading }] = useLoginMutation();
 
   const [formData, setFormData] = useState({
     email: "",
@@ -18,16 +21,28 @@ const Login = () => {
     });
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
+  const handleSubmit = async (e) => {
+  e.preventDefault();
 
-    console.log(formData);
-     toast.success("Login successful");
-  };
+  try {
+    const res = await loginUser(formData).unwrap();
+
+    console.log(res);
+
+    toast.success("Login successful");
+     setTimeout(() => {
+      navigate("/");
+    }, 1000);
+  } catch (error) {
+    console.log(error);
+
+    toast.error(error?.data?.message || "Login failed");
+  }
+};
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
-            <ToastContainer />
+      <ToastContainer />
       <div className="w-full max-w-md bg-white rounded-xl shadow-lg p-8">
         <h2 className="text-3xl font-bold text-center text-gray-800 mb-6">
           Login
@@ -85,7 +100,10 @@ const Login = () => {
 
         <p className="text-center text-gray-600 mt-4">
           Don't have an account?{" "}
-          <Link to="/registration" className="text-blue-600 cursor-pointer hover:underline">
+          <Link
+            to="/registration"
+            className="text-blue-600 cursor-pointer hover:underline"
+          >
             Register
           </Link>
         </p>

@@ -2,16 +2,16 @@ import React, { useState } from "react";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { Link, useNavigate } from "react-router";
 import { ToastContainer, toast } from "react-toastify";
-import { useRegistrationMutation     } from "../service/api";
+import { useRegistrationMutation } from "../service/api";
 
 const Registration = () => {
-    const [registerUser,data ] = useRegistrationMutation();
-    console.log(registerUser)
+  const [registerUser, data] = useRegistrationMutation();
+  console.log(registerUser);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
-    name: "",
+    fullName: "",
     email: "",
     password: "",
     confirmPassword: "",
@@ -24,20 +24,26 @@ const Registration = () => {
     });
   };
 
-  const handleSubmit =async (e) => {
-    e.preventDefault();
-const res = await registerUser(formData);
-    if (formData.password !== formData.confirmPassword) {
-       toast.warning("Password does not match");
-      return;
-    }
+ const handleSubmit = async (e) => {
+  e.preventDefault();
 
-    console.log(formData);
-    toast.success("Registration successful");
+  if (formData.password !== formData.confirmPassword) {
+    toast.warning("Password does not match");
+    return;
+  }
+
+  try {
+    const res = await registerUser(formData).unwrap();
+    toast.success(res.message);
+
     setTimeout(() => {
       navigate("/login");
     }, 1500);
-  };
+  } catch (error) {
+    toast.error(error?.data?.message || "Registration failed");
+    console.log(error);
+  }
+};
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
@@ -56,9 +62,9 @@ const res = await registerUser(formData);
 
             <input
               type="text"
-              name="name"
-              placeholder="Enter your full name"
-              value={formData.name}
+              name="fullName"
+               placeholder="Enter your full Name"
+              value={formData.fullName}
               onChange={handleChange}
               required
               className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
