@@ -172,6 +172,46 @@ const updateProfile = async (req, res) => {
   }
 };
 
+const userList = async (req, res) => {
+  const { verified } = req.query || "";
+  const { limit } = req.query || 10;
+  const { page } = req.query || 1;
+  const skip = limit * (page - 1);
+  const filterQueries = {};
+  if (verified && verified.toLowerCase() != "all") {
+    filterQueries.isVerified = verified == "true";
+  }
+  try {
+    const total = await userSchema.countDocuments();
+    console.log(total);
+    const users = await userSchema
+      .find(filterQueries, {
+        fullName: 1,
+        email: 1,
+        role: 1,
+        avatar: 1,
+        isVerified: 1,
+      })
+      .limit(limit)
+      .skip(skip);
+    const totalPage = total / limit;
+    res.status(200).send({
+      users,
+      pagination: {
+        limit,
+        page,
+        total,
+        totalPage,
+        hasNextPage: totalPage > page,
+        hasPrevPage: totalPage < page,
+      },
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).send({ message: "internal server error" });
+  }
+};
+
 module.exports = {
   registration,
   verifyOtp,
@@ -179,4 +219,5 @@ module.exports = {
   login,
   getProfile,
   updateProfile,
+  userList,
 };
