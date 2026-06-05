@@ -1,4 +1,7 @@
-const { uploadToCloudinary, destroyFromCloudinary } = require("../helpers/utils");
+const {
+  uploadToCloudinary,
+  destroyFromCloudinary,
+} = require("../helpers/utils");
 const categorySchema = require("../model/categorySchema");
 
 const createCategory = async (req, res) => {
@@ -18,7 +21,7 @@ const createCategory = async (req, res) => {
 const getAllCategory = async (req, res) => {
   try {
     const categories = await categorySchema.find({});
-    res.status(200).send(categories)
+    res.status(200).send(categories);
   } catch (error) {
     console.log(error);
     res.status(500).send({ message: "internal server error" });
@@ -26,7 +29,7 @@ const getAllCategory = async (req, res) => {
 };
 
 const updateCategory = async (req, res) => {
- // const { id } = req.params;
+  // const { id } = req.params;
   const { title } = req.body;
   const thumbnail = req.file;
 
@@ -34,9 +37,7 @@ const updateCategory = async (req, res) => {
     const category = await categorySchema.findOne({ _id: req.user._id });
 
     if (!category) {
-      return res.status(404).send({
-        message: "Category not found",
-      });
+      return res.status(404).send({ message: "Category not found" });
     }
 
     if (title && title.trim()) {
