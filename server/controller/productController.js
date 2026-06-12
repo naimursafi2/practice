@@ -1,3 +1,4 @@
+const { uploadToCloudinary } = require("../helpers/utils");
 const productSchema = require("../model/productSchema");
 const { findOne } = require("../model/productSchema");
 
@@ -61,6 +62,38 @@ const createProduct = async (req, res) => {
     const skus = variantsData.map((v) => v.sku);
     if (new Set(sku).size !== skus.length)
       return res.status(400).send({ message: "Sku must be unique" });
+
+    //image validation and upload
+    const thumbnailUrl = await uploadToCloudinary({
+      mimetype: thumbnail[0].mimetype,
+      imgBuffer: thumbnail[0].mimetype,
+    });
+
+    const imageRes = images.map((item) => {
+      return uploadToCloudinary({
+        mimetype: item.mimetype,
+        imgBuffer: item.imgBuffer,
+      });
+    });
+    const imageUrls = await Promise.all(imageRes);
+
+    const productData = await productSchema.create({
+      title,
+      slug,
+      description,
+      category,
+      price,
+      discountPersentage,
+      variants: variantsData,
+      tags,
+      isActive,
+      thumbnail: thumbnailUrl,
+      images: imageUrls,
+    });
+
+    res
+      .status(400)
+      .send({ message: "Product Created Successfull", productData });
   } catch (error) {
     console.log(error);
     res.status(400).send({ message: "Inernal Server Error" });
